@@ -76,62 +76,70 @@ namespace LittleH.WatsonCSharp.Util
    /// <returns> the API key </returns>
    public static string getAPIKey(string serviceName, string plan)
    {
-            /*
+
        if (serviceName == null || serviceName.Length == 0)
        {
            return null;
        }
 
-       JsonObject services = VCAPServices;
+
+
+       List<VCAPService> services = VCAPServices;
        if (services == null)
        {
-           return getKeyUsingJNDI(serviceName);
+             
+                throw new IOException("No VCAP Services Present");
+       //    return getKeyUsingJNDI(serviceName);
        }
 
-       foreach (Entry<string, JsonElement> entry in services.entrySet())
+       foreach (VCAPService entry in services)
        {
-           //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-           //ORIGINAL LINE: final String key = entry.getKey();
-           string key = entry.Key;
-           if (key.StartsWith(serviceName, StringComparison.Ordinal))
+
+           string key = entry.Name;
+           if (key.Equals(serviceName,StringComparison.CurrentCultureIgnoreCase))
            {
-               //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-               //ORIGINAL LINE: final JsonArray servInstances = services.getAsJsonArray(key);
-               JsonArray servInstances = services.getAsJsonArray(key);
-               foreach (JsonElement instance in servInstances)
-               {
-                   //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-                   //ORIGINAL LINE: final JsonObject service = instance.getAsJsonObject();
-                   JsonObject service = instance.AsJsonObject;
-                   //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-                   //ORIGINAL LINE: final String instancePlan = service.get(PLAN).getAsString();
-                   string instancePlan = service.get(PLAN).AsString;
-                   if (plan == null || plan.Equals(instancePlan, StringComparison.CurrentCultureIgnoreCase))
-                   {
-                       //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-                       //ORIGINAL LINE: final JsonObject credentials = instance.getAsJsonObject().getAsJsonObject(CREDENTIALS);
-                       JsonObject credentials = instance.AsJsonObject.getAsJsonObject(Credentials);
-                       if (serviceName.Equals(ALCHEMY_API, StringComparison.CurrentCultureIgnoreCase))
-                       {
-                           return credentials.get(APIKEY).AsString;
-                       }
-                       else
-                       {
-                           //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-                           //ORIGINAL LINE: final String username = credentials.get(USERNAME).getAsString();
-                           string username = credentials.get(USERNAME).AsString;
-                           //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-                           //ORIGINAL LINE: final String password = credentials.get(PASSWORD).getAsString();
-                           string password = credentials.get(PASSWORD).AsString;
-                           return Credentials.basic(username, password);
+                    /*
+                    JsonArray servInstances = services.getAsJsonArray(key);
+                    foreach (JsonElement instance in servInstances)
+                    {
+
+                        JsonObject service = instance.AsJsonObject;
+
+                        string instancePlan = service.get(Plan).AsString;
+                        if (plan == null || plan.Equals(instancePlan, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            JsonObject credentials = instance.AsJsonObject.getAsJsonObject(Credentials);
+                            if (serviceName.Equals(AlchemyApi, StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                return credentials.get(ApiKey).AsString;
+                            }
+                            else
+                            {
+                            */
+
+                    string username;
+                    string password;
+
+
+                    entry.Credentials.TryGetValue(Username, out username);
+                    entry.Credentials.TryGetValue(Password, out password);
+                
+                                //basic authentication
+                                string inputText = username + ":" + password;
+                                byte[] bytesToEncode = Encoding.UTF8.GetBytes(inputText);
+                                string encodedText = Convert.ToBase64String(bytesToEncode);
+
+                                return encodedText;
                        }
                    }
-               }
-           }
-       }
-       */
-       return null;
-   }
+            return null;
+        }
+           
+       
+       
+       
+      
+   
 
 
    /// <summary>

@@ -43,7 +43,7 @@ namespace LittleH.WatsonCSharp.test
             Console.ReadLine();
 
 
-
+            Console.WriteLine(CredentialUtils.getAPIKey("tradeoff-analytics-service"));
 
         }
 
